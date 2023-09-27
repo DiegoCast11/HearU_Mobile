@@ -1,10 +1,15 @@
 {
   "name": "hu-mobile",
   "version": "1.0.0",
-  "description": "An mobile app for music",
+  "description": "A mobile app for music",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiegoCast11/HearU_Mobile.git"
   },
   "keywords": [
     "music",
@@ -14,7 +19,13 @@
   ],
   "author": "Diego Castillo",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DiegoCast11/HearU_Mobile/issues"
+  },
+  "homepage": "https://github.com/DiegoCast11/HearU_Mobile#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.0.1"
   }
 }
