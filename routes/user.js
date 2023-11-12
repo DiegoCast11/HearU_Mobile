@@ -40,8 +40,7 @@ user.post("/login", async (req, res, next) => {
     if (nombreUsuario && contrasena) {
         if (rows[0].length == 1) {
             const token = jwt.sign({
-                user_id: rows[0].id,
-                nombreUsuario: rows[0].nombreUsuario
+                nombreUsuario: rows[0][0].nombreUsuario
             }, "debugkey");
             return res.status(200).json({ code: 200, message: token });
         } else {

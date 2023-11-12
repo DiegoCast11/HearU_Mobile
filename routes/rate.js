@@ -1,16 +1,38 @@
 const express = require('express');
 const rate = express.Router();
 const db = require('../config/database');
+const auth = require('../middleware/auth');
 //hacer get para obtener info de la cancion
-//hacer post para agregar un rate
+
+
+
 rate.get("/", async (req, res, next) => {
-    const date = new Date();
-    console.log(date)
-    return res.status(200).json({ message: 'Hola mundo' });
+    const nombreUsuario = req.user.nombreUsuario;
+    return res.status(200).json({ message: 'usuario: ' + nombreUsuario });
 });
 
-rate.post("/:idCancion", async (req, res, next) => {
-    const { nombreUsuario, score, descripcion} = req.body;
+rate.get("/:idCancion([0-9]{1,3})", async (req, res, next) => {
+    const idCancion = req.params.idCancion;
+    try{
+        const query = `CALL getSongInfo('${idCancion}')`;
+        const rows = await db.query(query);
+        console.log(rows);
+        if (rows[0].length > 0) {
+            return res.status(200).json({ code: 200, message: rows[0][0] });
+        } else {
+            return res.status(404).json({ code: 404, message: "Song not found" });
+        }
+    
+    } catch(e) {
+        console.log(e);
+        return res.status(500).json({ code: 500, message: "Ocurrió un error" });
+    }
+
+});
+
+rate.post("/:idCancion([0-9]{1,3})", async (req, res, next) => {
+    const nombreUsuario = req.user.nombreUsuario;
+    const { score, descripcion} = req.body;
     const idCancion = req.params.idCancion;
     //obtener id album y autor mediante consulta sql de la cancion
     const getSongInfo = `CALL getSongInfo('${idCancion}')`;

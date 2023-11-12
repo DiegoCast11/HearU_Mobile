@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-//hacerlo en otro archivo en caso de requerirlo
-const db = require('./config/database');
+//middlewares
+const auth = require('./middleware/auth');
 
 //routes
 user = require('./routes/user');
@@ -15,6 +15,7 @@ app.get('/', async (req, res, next) => {
 });
 
 app.use('/user', user);
+app.use(auth);
 app.use('/rate', rate);
 
 app.listen(process.env.PORT || 3000, () => {
