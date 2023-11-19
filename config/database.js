@@ -4,7 +4,7 @@ const util = require('util');
 const pool = mysql.createPool({
     connectionLimit: 10,
     host: 'localhost',
-    user: 'root',
+    user: 'huuser',
     password: '',
     database:'hearudb'
 });

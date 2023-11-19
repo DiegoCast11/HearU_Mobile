@@ -16,7 +16,6 @@ rate.get("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     try{
         const query = `CALL getSongInfo('${idCancion}')`;
         const rows = await db.query(query);
-        console.log(rows);
         if (rows[0].length > 0) {
             return res.status(200).json({ code: 200, message: rows[0][0] });
         } else {
@@ -48,8 +47,6 @@ rate.post("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     const minutes = fecha.getMinutes();  // Obtener los minutos
     const seconds = fecha.getSeconds();  // Obtener los segundos
     const fechaPublicacion = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-    //agregar pubicacion a bd 
     try{
         const query = `CALL publishRate('${nombreUsuario}', '${fechaPublicacion}', '${score}', '${descripcion}', '${idAlbum}', '${idCancion}', '${idAutor}')`;
         const rows = await db.query(query);
