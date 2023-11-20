@@ -8,6 +8,8 @@ user = require('./routes/user');
 rate = require('./routes/rate');
 home = require('./routes/home');
 favorites = require('./routes/favorites');
+artist = require('./routes/artist');
+album = require('./routes/album');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +23,8 @@ app.use(auth);
 app.use('/rate', rate);
 app.use('/home', home);
 app.use('/favorites', favorites);
+app.use('/artist', artist);
+app.use('/album', album);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running on port 3000');

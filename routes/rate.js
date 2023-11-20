@@ -12,9 +12,10 @@ rate.get("/", async (req, res, next) => {
 });
 
 rate.get("/:idCancion([0-9]{1,3})", async (req, res, next) => {
+    const nombreUsuario = req.user.nombreUsuario;
     const idCancion = req.params.idCancion;
     try{
-        const query = `CALL getSongInfo('${idCancion}')`;
+        const query = `CALL getSongInfo('${idCancion}', '${nombreUsuario}')`;
         const rows = await db.query(query);
         if (rows[0].length > 0) {
             return res.status(200).json({ code: 200, message: rows[0][0] });
