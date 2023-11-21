@@ -1,15 +1,6 @@
 const express = require('express');
 const rate = express.Router();
 const db = require('../config/database');
-const auth = require('../middleware/auth');
-//hacer get para obtener info de la cancion
-
-
-
-rate.get("/", async (req, res, next) => {
-    const nombreUsuario = req.user.nombreUsuario;
-    return res.status(200).json({ message: 'usuario: ' + nombreUsuario });
-});
 
 rate.get("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
