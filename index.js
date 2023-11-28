@@ -11,6 +11,8 @@ favorites = require('./routes/favorites');
 artist = require('./routes/artist');
 album = require('./routes/album');
 profile = require('./routes/profile');
+search = require('./routes/search');
+post = require('./routes/post');
 
 app.use(corsMiddleware);
 app.use(express.json());
@@ -28,6 +30,8 @@ app.use('/favorites', favorites);
 app.use('/artist', artist);
 app.use('/album', album);
 app.use('/profile', profile);
+app.use('/search', search);
+app.use('/post', post);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running on port 3000');
