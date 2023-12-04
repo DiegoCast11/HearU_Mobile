@@ -20,8 +20,25 @@ post.get("/:idPost", async (req, res, next) => {
     }
 });
 
-post.post("/comment", async (req, res, next) => {
-//hacer post para agregar comentario, username, idpost,fecha now(), texto,comentario padre.
+post.post("/:idPost", async (req, res, next) => {
+    const username = req.user.nombreUsuario;
+    const idPost = req.params.idPost;
+    const {comment, comentarioPadre} = req.body;
+    let query;
+    if(!comentarioPadre){
+        query = `call addComment('${username}', '${idPost}', '${comment}', null)`;
+    } else{
+        query = `call addComment('${username}', '${idPost}', '${comment}', ${comentarioPadre})`;
+    }
+    try{
+        const rows = await db.query(query);
+        if (rows.affectedRows == 1) {
+            return res.status(200).json({ code: 200, message: "Comentario agregado correctamente" });
+        }
+    }catch(e){
+        console.log(e);
+        return res.status(500).json({ code: 500, message: "Ocurrió un error" });
+    }
 });
 
 module.exports = post;
