@@ -14,6 +14,7 @@ profile = require('./routes/profile');
 search = require('./routes/search');
 post = require('./routes/post');
 feed = require('./routes/feed');
+song = require('./routes/song');
 
 app.use(corsMiddleware);
 app.use(express.json());
@@ -34,6 +35,7 @@ app.use('/profile', profile);
 app.use('/search', search);
 app.use('/post', post);
 app.use('/feed', feed);
+app.use('/song', song);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running on port 3000');
