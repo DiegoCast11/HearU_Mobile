@@ -26,7 +26,7 @@ rate.post("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     const { score, descripcion} = req.body;
     const idCancion = req.params.idCancion;
     //obtener id album y autor mediante consulta sql de la cancion
-    const getSongInfo = `CALL getSongInfo('${idCancion}')`;
+    const getSongInfo = `CALL getCancionInfo('${idCancion}')`;
     const rows = await db.query(getSongInfo);
     
     const idAlbum = rows[0][0].idAlbum;
