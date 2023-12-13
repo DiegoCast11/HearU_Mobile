@@ -10,7 +10,8 @@ David Mendoza Pérez
 
 
 # Acknowledgments
-Carlos Alberto Olmos, professor.
+1. Carlos Alberto Olmos, professor.
+2. Mauricio Ibarra Corona
 
 Welcome to HearUApp, a revolutionary mobile application that transforms the music experience by connecting music enthusiasts through a comprehensive platform. Discover, share, and connect with your favorite tunes and artists like never before!
 
