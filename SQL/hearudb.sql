@@ -1,3 +1,9 @@
+-- Crear una base de datos o esquema
+CREATE SCHEMA IF NOT EXISTS hearudb;
+
+-- Usar la base de datos o esquema recién creada
+USE hearudb;
+
 create table autores
 (
     idAutor     int auto_increment
@@ -73,6 +79,19 @@ create table usuarios
     correo        varchar(50)                                    null,
     contrasena    varchar(50)                                    null,
     profilePic    varchar(255) default '/profilePic/default.jpg' not null
+)
+    engine = InnoDB;
+
+create table amistades
+(
+    id_amistad  int auto_increment
+        primary key,
+    no_usuario1 varchar(50) null,
+    no_usuario2 varchar(50) null,
+    constraint amistades_ibfk_1
+        foreign key (no_usuario1) references usuarios (nombreUsuario),
+    constraint amistades_ibfk_2
+        foreign key (no_usuario2) references usuarios (nombreUsuario)
 )
     engine = InnoDB;
 
@@ -613,15 +632,17 @@ BEGIN
     GROUP BY c.idCancion;
 END;
 
-create
-    definer = root@localhost procedure getSongInfo(IN idCancion int, IN nombreUsuario varchar(50))
+CREATE DEFINER = root@localhost PROCEDURE getSongInfo(IN p_idCancion INT, IN p_nombreUsuario VARCHAR(50))
 BEGIN
+    -- Devuelve información detallada sobre la canción, incluyendo la foto de portada del álbum
     SELECT
         c.*,
+        a.portada AS portadaAlbum,
         CASE WHEN f.idFavorito IS NOT NULL THEN TRUE ELSE FALSE END AS enFavoritos
     FROM canciones c
-    LEFT JOIN favoritos f ON c.idCancion = f.idCancion AND f.nombreUsuario = nombreUsuario
-    WHERE c.idCancion = idCancion;
+    LEFT JOIN favoritos f ON c.idCancion = f.idCancion AND f.nombreUsuario = p_nombreUsuario
+    LEFT JOIN albumes a ON c.idAlbum = a.idAlbum
+    WHERE c.idCancion = p_idCancion;
 END;
 
 create
