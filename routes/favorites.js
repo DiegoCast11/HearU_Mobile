@@ -1,7 +1,7 @@
 const express = require('express');
 const favorites = express.Router();
 const db = require('../config/database');
-
+// POST route for adding a song to the user's favorites
 favorites.post("/", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const { idCancion } = req.body;
@@ -18,7 +18,7 @@ favorites.post("/", async (req, res, next) => {
         return res.status(500).json({ code: 500, message: "Ocurrió un error" });
     }
 });
-
+// DELETE route for removing a song from the user's favorites
 favorites.delete("/", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const { idCancion } = req.body;

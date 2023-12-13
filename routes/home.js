@@ -1,7 +1,7 @@
 const express = require('express');
 const home = express.Router();
 const db = require('../config/database');
-
+//get route for top artists for the banner
 home.get("/banner", async (req, res, next) => {
     const query = `SELECT * FROM artistasMasPopulares`;
     const rows = await db.query(query);
@@ -13,7 +13,7 @@ home.get("/banner", async (req, res, next) => {
         return res.status(404).json({ code: 404, message: "No hay artistas populares" });
     }
 });
-
+//get route for trending songs
 home.get("/trending", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const query = `call getTrendingSongs('${nombreUsuario}')`;
@@ -29,7 +29,7 @@ home.get("/trending", async (req, res, next) => {
         return res.status(500).json({ code: 500, message: "Ocurrió un error" });
     }
 });
-
+//get route for top rated songs
 home.get("/toprated", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const query = `call getTopRatedSongs('${nombreUsuario}')`;
@@ -45,7 +45,7 @@ home.get("/toprated", async (req, res, next) => {
             return res.status(500).json({ code: 500, message: "Ocurrió un error" });
         }
 });
-
+//get route for recommended songs for the user
 home.get("/recommended", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const query = `call GetRecommendedSongs('${nombreUsuario}')`;
@@ -64,4 +64,3 @@ home.get("/recommended", async (req, res, next) => {
 });
 
 module.exports = home;
-// url /home
