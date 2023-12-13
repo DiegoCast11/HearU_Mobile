@@ -1,8 +1,7 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const album = express.Router();
 const db = require('../config/database');
-
+// Defining a GET route for fetching an album by its ID
 album.get("/:idAlbum([0-9]{1,3})", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const idAlbum = req.params.idAlbum;

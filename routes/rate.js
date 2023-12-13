@@ -1,16 +1,8 @@
 const express = require('express');
 const rate = express.Router();
 const db = require('../config/database');
-const auth = require('../middleware/auth');
-//hacer get para obtener info de la cancion
 
-
-
-rate.get("/", async (req, res, next) => {
-    const nombreUsuario = req.user.nombreUsuario;
-    return res.status(200).json({ message: 'usuario: ' + nombreUsuario });
-});
-
+//get route to get song info for rate page
 rate.get("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const idCancion = req.params.idCancion;
@@ -29,7 +21,7 @@ rate.get("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     }
 
 });
-
+// POST route for publishing a new rate with a song
 rate.post("/:idCancion([0-9]{1,3})", async (req, res, next) => {
     const nombreUsuario = req.user.nombreUsuario;
     const { score, descripcion} = req.body;

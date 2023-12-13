@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const user = express.Router();
 const db = require('../config/database');
-
+//POST route for registering a new user
 user.post("/signup", async (req, res, next) => {
     const { nombreUsuario, nombre, correo, contrasena } = req.body;
 
@@ -32,7 +32,7 @@ user.post("/signup", async (req, res, next) => {
     }
     return res.status(500).json({ code: 500, message: "Campos incompletos" });
 });
-
+// POST route for logging in
 user.post("/login", async (req, res, next) => {
     const { nombreUsuario, contrasena } = req.body;
     const query = `CALL authenticate('${nombreUsuario}', '${contrasena}')`;
