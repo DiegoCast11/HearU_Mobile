@@ -5,7 +5,7 @@ const db = require('../config/database');
 song.get("/:idCancion", async (req, res, next) => {
     const idCancion = req.params.idCancion;
     const userName = req.user.nombreUsuario;
-    const songDetails = `call getSongDetails('${idCancion}')`;
+    const songDetails = `call getSongDetails('${idCancion}', '${userName}')`;
     const songPosts = `call getSongPosts('${idCancion}', '${userName}')`;
     try{
         const rows = await db.query(songDetails);

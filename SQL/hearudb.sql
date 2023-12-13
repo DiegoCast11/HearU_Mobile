@@ -611,8 +611,9 @@ BEGIN
     ORDER BY p.fechaPublicacion DESC;
 END;
 
-create
-    definer = root@localhost procedure getSongDetails(IN p_idCancion int)
+DELIMITER //
+
+CREATE PROCEDURE getSongDetails(IN p_idCancion INT, IN p_nombreUsuario VARCHAR(50))
 BEGIN
     -- Devuelve información detallada sobre la canción, incluyendo la portada del álbum
     SELECT
@@ -622,15 +623,19 @@ BEGIN
         g.nombreGenero AS genero,
         c.duracion,
         al.portada AS portadaAlbum,
-        AVG(p.score) AS promedioScore
+        AVG(p.score) AS promedioScore,
+        CASE WHEN f.idFavorito IS NOT NULL THEN TRUE ELSE FALSE END AS enFavoritos
     FROM canciones c
     LEFT JOIN autores a ON c.idAutor = a.idAutor
     LEFT JOIN generos g ON c.idGenero = g.idGenero
     LEFT JOIN albumes al ON c.idAlbum = al.idAlbum
     LEFT JOIN publicaciones p ON c.idCancion = p.idCancion
+    LEFT JOIN favoritos f ON c.idCancion = f.idCancion AND f.nombreUsuario = p_nombreUsuario
     WHERE c.idCancion = p_idCancion
     GROUP BY c.idCancion;
-END;
+END //
+
+DELIMITER ;
 
 CREATE DEFINER = root@localhost PROCEDURE getSongInfo(IN p_idCancion INT, IN p_nombreUsuario VARCHAR(50))
 BEGIN
