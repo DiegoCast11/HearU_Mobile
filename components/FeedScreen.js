@@ -41,31 +41,33 @@ const FeedScreen = ({ navigation }) => {
   // Función de renderizado para un elemento de la lista de publicaciones en el feed
 
   const renderItem = ({ item }) => (
-    <View style={styles.feedItem}>
-      <Image source={{ uri: `asset:/imgs/profilePic/${item.profilepic}` }} style={styles.profileImage} />
-      <View style={styles.feedContent}>
-        <Text style={styles.userName}>{item.nombreUsuarioPublicacion}</Text>
-        <Text style={styles.songTitle}>{item.tituloCancion}</Text>
-        <Image source={{ uri: `asset:/imgs/cover/${item.portadaAlbum}` }} style={styles.albumCover} />
-        <AirbnbRating
-          count={5}
-          showRating={false}
-          defaultRating={item.score} // Puedes ajustar el valor del rating aquí
-          size={20}
-          isDisabled
-        />
+    <TouchableOpacity
+      style={styles.commentButton}
+      onPress={() => navigation.navigate('PostScreen', { postId: item.idPublicacion })}
+    >
+      <View style={styles.feedItem}>
+        <Image source={{ uri: `asset:/imgs/profilePic/${item.profilepic}` }} style={styles.profileImage} />
+        <View style={styles.feedContent}>
+          <Text style={styles.userName}>{item.nombreUsuarioPublicacion}</Text>
+          <Text style={styles.songTitle}>{item.tituloCancion}</Text>
+          <Image source={{ uri: `asset:/imgs/cover/${item.portadaAlbum}` }} style={styles.albumCover} />
+          <AirbnbRating
+            count={5}
+            showRating={false}
+            defaultRating={item.score} // Puedes ajustar el valor del rating aquí
+            size={20}
+            isDisabled
+          />
 
 
-        <TouchableOpacity
-          style={styles.commentButton}
-          onPress={() => navigation.navigate('PostScreen', { postId: item.idPublicacion })}
-        >
-          <Text style={styles.commentButtonText}>Ver que piensa</Text>
-        </TouchableOpacity>
 
 
+
+        </View>
       </View>
-    </View>
+
+    </TouchableOpacity>
+
   );
 
   // Renderiza la interfaz de usuario de la pantalla de Feed
