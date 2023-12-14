@@ -5,20 +5,15 @@ import { BASE_URL } from "../api/client";
 import { AirbnbRating } from "react-native-ratings";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const SongScreen = ({ route, navigation }) => {
-  // Obtener datos de la canción desde la ruta
   const { song } = route.params || {};
   const [songDetails, setSongDetails] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    // Función para obtener detalles adicionales de la canción desde la API
     const fetchSongDetails = async () => {
       try {
-        // Obtener token almacenado en AsyncStorage
         const token = await AsyncStorage.getItem('token');
-
-        // Realizar solicitud a la API para obtener detalles adicionales
         const response = await axios.get(`${BASE_URL}/song/${song.idCancion}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,18 +21,20 @@ const SongScreen = ({ route, navigation }) => {
         });
 
         setSongDetails(response.data.message);
+
+        // Verificar si la canción está en favoritos al cargar los detalles
+        if (response.data.message.song[0].enFavoritos === 1) {
+          setIsFavorite(true);
+        }
       } catch (error) {
         console.error('Error fetching song details:', error);
       }
     };
 
-    // Llamar a la función para obtener detalles cuando el componente se monta
     fetchSongDetails();
   }, [song.idCancion]);
 
-  // Función para manejar la calificación de la canción
   const handleRateSong = () => {
-    // Verificar si hay detalles de la canción antes de navegar
     if (songDetails && songDetails.song && songDetails.song.length > 0) {
       navigation.navigate('RatingScreen', {
         idCancion: songDetails.song[0].idCancion,
@@ -45,15 +42,62 @@ const SongScreen = ({ route, navigation }) => {
         imagen: songDetails.song[0].portadaAlbum,
       });
     } else {
-      // Manejar el caso en el que no se obtienen detalles de la canción
       Alert.alert('Error', 'No se pudieron obtener los detalles de la canción. Inténtalo de nuevo.');
     }
   };
 
-  // Estructura básica de la pantalla
+  const handleFavorite = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(`${BASE_URL}/favorites`,
+        {
+          idCancion: song.idCancion,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.code === 201) {
+        setIsFavorite(true);
+      } else if (response.data.code === 200) {
+        setIsFavorite(false);
+      } else {
+        // Handle other response codes as needed
+      }
+    } catch (error) {
+      console.error('Error handling favorite:', error);
+    }
+  };
+
+  const handleRemoveFavorite = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.delete(`${BASE_URL}/favorites`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          idCancion: song.idCancion,
+        },
+      });
+
+      if (response.data.code === 200) {
+        setIsFavorite(false);
+      } else if (response.data.code === 404) {
+        // Puedes manejar la lógica aquí para el caso en que la canción no se encuentra en favoritos
+      } else {
+        // Handle other response codes as needed
+      }
+    } catch (error) {
+      console.error('Error handling remove favorite:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Encabezado de la pantalla */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>&lt; Atrás</Text>
@@ -61,17 +105,15 @@ const SongScreen = ({ route, navigation }) => {
         <Text style={styles.title}>Detalles de la Canción</Text>
       </View>
 
-      {/* Contenido de la pantalla */}
       <View style={styles.content}>
-        {/* Detalles de la canción */}
         {songDetails && songDetails.song && songDetails.song.length > 0 && (
           <>
-            {/* Imagen de la canción */}
             <Image source={{ uri: `asset:/imgs/cover/${songDetails.song[0].portadaAlbum}` }} style={styles.songImage} />
             <Text style={styles.songTitle}>{songDetails.song[0].nombreCancion}</Text>
             <Text style={styles.artist}>{songDetails.song[0].autor}</Text>
-            <Text style={styles.album}>{`Duración: ${songDetails.song[0].duracion}`}</Text>
-            <Text style={styles.album}>{`Género: ${songDetails.song[0].genero}`}</Text>
+            <Text style={styles.album}>Duración: <Text style={styles.albumText}>{songDetails.song[0].duracion}</Text></Text>
+            <Text style={styles.album}>Género: <Text style={styles.albumText}>{songDetails.song[0].genero}</Text></Text>
+
 
             {songDetails.song[0].promedioScore && (
               <View style={styles.ratingContainer}>
@@ -86,7 +128,13 @@ const SongScreen = ({ route, navigation }) => {
               </View>
             )}
 
-            {/* Botón para calificar la canción */}
+            <TouchableOpacity style={styles.favoriteButton} onPress={isFavorite ? handleRemoveFavorite : handleFavorite}>
+              <Image
+                source={isFavorite ? require('../assets/icons/corazonLleno.png') : require('../assets/icons/corazonVacio.png')}
+                style={styles.favoriteIcon}
+              />
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.rateButton} onPress={handleRateSong}>
               <Text style={styles.rateButtonText}>Calificar Canción</Text>
             </TouchableOpacity>
@@ -152,6 +200,13 @@ const styles = StyleSheet.create({
     color: 'white',
     marginRight: 10,
   },
+  favoriteButton: {
+    marginVertical: 10,
+  },
+  favoriteIcon: {
+    width: 30,
+    height: 30,
+  },
   rateButton: {
     backgroundColor: '#E53C3C',
     paddingVertical: 10,
@@ -163,6 +218,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  albumText: {
+    color: "white",
+    fontSize: 16,
+  }
+  
 });
 
 export default SongScreen;

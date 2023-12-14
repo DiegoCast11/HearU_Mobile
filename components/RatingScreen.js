@@ -6,26 +6,55 @@ import { BASE_URL } from '../api/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RatingScreen = ({ route, navigation }) => {
-  const { idCancion, nombreCancion, imagen} = route.params;
+  const { idCancion } = route.params;
+  const [songInfo, setSongInfo] = useState({});
   const [score, setScore] = useState(0);
   const [descripcion, setDescripcion] = useState('');
 
   useEffect(() => {
-    // Lógica al cargar la pantalla, si es necesario
+    obtenerInformacionCancion();
   }, []);
 
-  const enviarCalificacion = async () => {
+  const obtenerInformacionCancion = async () => {
     try {
-      // Obtén el token de autenticación desde AsyncStorage
       const token = await AsyncStorage.getItem('token');
 
-      // Verifica si el token existe
       if (!token) {
         Alert.alert('Error', 'No se ha encontrado el token de autenticación. Inicia sesión nuevamente.');
         return;
       }
 
-      // Realiza una solicitud POST al endpoint correspondiente en tu servidor
+      const response = await axios.get(
+        `${BASE_URL}/rate/${idCancion}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Respuesta del servidor (GET):', response.data);
+
+      if (response.data && response.data.code === 200) {
+        setSongInfo(response.data.message);
+      } else {
+        Alert.alert('Error', 'No se pudo obtener la información de la canción. Inténtalo de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error al obtener información de la canción:', error);
+      Alert.alert('Error', 'Ocurrió un error al obtener la información de la canción. Inténtalo de nuevo.');
+    }
+  };
+
+  const enviarCalificacion = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        Alert.alert('Error', 'No se ha encontrado el token de autenticación. Inicia sesión nuevamente.');
+        return;
+      }
+
       const response = await axios.post(
         `${BASE_URL}/rate/${idCancion}`,
         { score, descripcion },
@@ -37,13 +66,10 @@ const RatingScreen = ({ route, navigation }) => {
         }
       );
 
-      console.log('Respuesta del servidor:', response.data); // Agrega esta línea para verificar la respuesta del servidor
+      console.log('Respuesta del servidor (POST):', response.data);
 
-      // Verifica la respuesta del servidor
       if (response.data && response.data.code === 201) {
-        // Calificación enviada con éxito
         Alert.alert('Éxito', 'Calificación enviada correctamente');
-        // Puedes realizar acciones adicionales aquí si es necesario
       } else {
         Alert.alert('Error', 'No se pudo enviar la calificación. Inténtalo de nuevo.');
       }
@@ -56,10 +82,12 @@ const RatingScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Calificar Canción</Text>
-      <Text style={styles.songName}>{`Canción: ${nombreCancion}`}</Text>
+      <Text style={styles.songName}>{`Canción: ${songInfo.nombre}`}</Text>
+      <Text style={styles.songName}>{`Duración: ${songInfo.duracion}`}</Text>
+
       <Image
-          source={{ uri: `asset:/imgs/cover/${imagen}`}}
-          style={styles.bannerImage}
+        source={{ uri: `asset:/imgs/cover/${songInfo.portadaAlbum}` }}
+        style={styles.coverImage}
       />
 
       <AirbnbRating
@@ -87,7 +115,7 @@ const RatingScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222', // Fondo negro
+    backgroundColor: '#222',
     padding: 20,
     alignItems: 'center',
   },
@@ -103,6 +131,11 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 15,
   },
+  coverImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 15,
+  },
   descriptionLabel: {
     fontSize: 16,
     color: 'white',
@@ -111,14 +144,14 @@ const styles = StyleSheet.create({
   descriptionInput: {
     width: '100%',
     height: 100,
-    backgroundColor: 'white', // Color de fondo del cuadro de entrada
+    backgroundColor: 'white',
     borderRadius: 10,
     padding: 10,
     marginTop: 5,
     marginBottom: 15,
   },
   button: {
-    backgroundColor: '#E53C3C', // Color del botón
+    backgroundColor: '#E53C3C',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
